@@ -5,6 +5,7 @@ from hw_asr.base import BaseModel
 from hw_asr.base import BaseModel
 from torch import nn
 
+
 class CNNLayerNorm(nn.Module):
     """Layer normalization built for cnns input"""
 
@@ -15,8 +16,10 @@ class CNNLayerNorm(nn.Module):
     def forward(self, x):
         # x (batch, channel, feature, time)
         x = x.transpose(2, 3).contiguous()  # (batch, channel, time, feature)
+        # x = x.contiguous()
         x = self.layer_norm(x)
         return x.transpose(2, 3).contiguous()  # (batch, channel, feature, time)
+        # return x.contiguous()
 
 
 class ResidualCNN(nn.Module):
@@ -37,11 +40,11 @@ class ResidualCNN(nn.Module):
     def forward(self, x):
         residual = x  # (batch, channel, feature, time)
         x = self.layer_norm1(x)
-        x = F.gelu(x)
+        x = nn.GELU()(x)
         x = self.dropout1(x)
         x = self.cnn1(x)
         x = self.layer_norm2(x)
-        x = F.gelu(x)
+        x = nn.GELU()(x)
         x = self.dropout2(x)
         x = self.cnn2(x)
         x += residual
@@ -61,7 +64,7 @@ class BidirectionalGRU(nn.Module):
 
     def forward(self, x):
         x = self.layer_norm(x)
-        x = F.gelu(x)
+        x = nn.GELU()(x)
         x, _ = self.BiGRU(x)
         x = self.dropout(x)
         return x
@@ -94,13 +97,22 @@ class SpeechRecognitionModel(BaseModel):
         )
 
     def forward(self, spectrogram, *args, **kwargs):
-        x = spectrogram.unsqueeze(1)
+        x = spectrogram.unsqueeze(1).transpose(2, 3)
+        print(x.size())
         x = self.cnn(x)
         x = self.rescnn_layers(x)
         sizes = x.size()
+        print(sizes)
         x = x.view(sizes[0], sizes[1] * sizes[2], sizes[3])  # (batch, feature, time)
         x = x.transpose(1, 2)  # (batch, time, feature)
+
         x = self.fully_connected(x)
         x = self.birnn_layers(x)
         x = self.classifier(x)
-        return x
+        # return x
+        return {"logits": x}
+
+    def transform_input_lengths(self, input_lengths):
+        return input_lengths // 2
+#######
+
