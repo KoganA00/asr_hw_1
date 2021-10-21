@@ -3,37 +3,43 @@ from typing import List, Tuple
 import torch
 
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
+import os
 
 import youtokentome
 
 class CTCBPETextEncoder(CharTextEncoder):
-
+    EMPTY_TOK = "^"
     def __init__(self, alphabet: List[str], **kwargs):
+        model_path = './bpe/bpe_train_libreespeech.model'
+        self.bpe_tokenizer = youtokentome.BPE(model_path)
 
+        alphabet = [self.EMPTY_TOK] + self.bpe_tokenizer.vocab()
+        super().__init__(alphabet)
 
 
     def ctc_decode(self, inds: List[int]) -> str:
         # TODO: your code here
-        line = ''
+        if torch.is_tensor(inds):
+            inds = inds.tolist()
+        line = []
         prev_letter = None
         prev_letter_was_empty_token = False
         for ind in inds:
             if ind == 0:
                 prev_letter_was_empty_token = True
                 continue
-            if len(line) == 0 or prev_letter != self.ind2char[ind] or prev_letter_was_empty_token:
-                line = line + self.ind2char[ind]
+            if len(line) == 0 or prev_letter != ind or prev_letter_was_empty_token:
+                line.append(ind)
                 prev_letter = line[-1]
-        return line
+        return self.bpe_tokenizer.decode([result])[0]
 
-
-    def _ctc_decode_string(self, str):
-        str_with_empty = []
-        for char in str:
-            if len(str_with_empty) > 0 and str_with_empty[-1] == char:
-                continue
-            str_with_empty.append(char)
-        return ''.join(list(filter(lambda x: x != self.EMPTY_TOK, str_with_empty)))
+    def encode(self, text) -> Tensor:
+        text = self.normalize_text(text)
+        try:
+            return Tensor(self.bpe.encode([text], output_type=youtokentome.OutputType.ID)).squeeze(0).squeeze(0)
+        except KeyError as e:
+            raise Exception(
+                f"Can't encode text '{text}'")
 
     def ctc_beam_search(self, probs: torch.tensor, probs_length,
                         beam_size: int = 100) -> List[Tuple[str, float]]:
@@ -78,7 +84,7 @@ class CTCBPETextEncoder(CharTextEncoder):
 
         hypos = [(x, old_hypos_prob[x]) for x in old_hypos_prob.keys()]
         '''
-
+'''
         for i in range(char_length):
 
             new_hypos_prob = {}
@@ -99,4 +105,4 @@ class CTCBPETextEncoder(CharTextEncoder):
 
         hypos = [(x, final_hypos[x]) for x in final_hypos.keys()]
 
-        return sorted(hypos, key=lambda x: x[1], reverse=True)
+        return sorted(hypos, key=lambda x: x[1], reverse=True)'''

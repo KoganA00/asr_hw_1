@@ -4,7 +4,8 @@ numpy
 tqdm
 tensorboard
 matplotlib
-
+youtokentome
+wandb
 
 pandas
 speechbrain~=0.5.9
