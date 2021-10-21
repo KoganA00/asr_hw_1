@@ -12,14 +12,27 @@ class TestTextEncoder(unittest.TestCase):
         decoded_text = text_encoder.ctc_decode(inds)
         self.assertIn(decoded_text, true_text)
 
-   ''' def test_bpe_decode(self):
+    def test_bpe_decode(self):
         bpe = CTCBPETextEncoder()
-        text = "ill^ their"
-        true_text = "ill their"
+        text =  ' soon soon^^^^^ia'
+        true_text = " soonia"
         encoded_text = bpe.encode(text)
         decoded_text = bpe.ctc_decode(encoded_text)
-        self.assertIn(decoded_text, true_text)'''
+        print(decoded_text, true_text)
+        self.assertIn(decoded_text, true_text)
 
     def test_beam_search(self):
         # TODO: (optional) write tests for beam search
-        pass
+        import torch
+        import numpy as np
+        encoder = CTCCharTextEncoder(alphabet=['a', 'b'])
+        probes = torch.tensor([[0.8, 0.2, 0.0], [0.6, 0.4, 0.0]])
+        hypos = encoder.ctc_beam_search(probes, 0, 2)
+        # print(hypos)
+        real_hypos = sorted([('a', 0.52), ('', 0.48)], key=lambda x: x[1], reverse=True)
+        assert len(real_hypos) == len(hypos), 'different lengths'
+
+        for i in range(len(hypos)):
+            assert hypos[i][0] == real_hypos[i][0], 'Different strings'
+
+            assert np.allclose(hypos[i][1], real_hypos[i][1])

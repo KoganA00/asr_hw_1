@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 import torch
-
+from torch import Tensor
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
 import os
 
@@ -13,7 +13,8 @@ class CTCBPETextEncoder(CharTextEncoder):
         model_path = './bpe/bpe_train_libreespeech.model'
         self.bpe_tokenizer = youtokentome.BPE(model_path)
 
-        alphabet = [self.EMPTY_TOK] + self.bpe_tokenizer.vocab()
+        alphabet = self.bpe_tokenizer.vocab()
+        alphabet[0] = self.EMPTY_TOK
         super().__init__(alphabet)
 
 

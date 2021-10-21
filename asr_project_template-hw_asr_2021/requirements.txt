@@ -6,7 +6,7 @@ tensorboard
 matplotlib
 youtokentome
 wandb
-
+librosa
 pandas
 speechbrain~=0.5.9
 torchaudio~=0.9.1

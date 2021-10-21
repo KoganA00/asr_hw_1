@@ -10,8 +10,20 @@
     }
   },
   "augmentations": {
-    "wave": [],
-    "spectrogram": []
+    "wave": [
+      {"type":"Gain",
+      "args": {}},
+      {"type":"Volume",
+      "args": {}},
+      {"type":"Stretch",
+      "args": {},
+       {"type":"NormalNoise",
+      "args": {}}
+    ],
+    "spectrogram": [
+      {"type":"FreqMasking",
+      "args": {}}
+    ]
   },
   "arch": {
     "type": "BaselineModel",
