@@ -16,7 +16,7 @@
       {"type":"Volume",
       "args": {}},
       {"type":"Stretch",
-      "args": {},
+      "args": {}},
        {"type":"NormalNoise",
       "args": {}}
     ],
