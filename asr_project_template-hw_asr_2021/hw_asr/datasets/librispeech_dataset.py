@@ -13,6 +13,20 @@ from hw_asr.text_encoder.ctc_char_text_encoder import CTCCharTextEncoder
 from hw_asr.utils import ROOT_PATH
 from hw_asr.utils.parse_config import ConfigParser
 
+
+import ssl
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    # Legacy Python that doesn't verify HTTPS certificates by default
+    pass
+else:
+    # Handle target environment that doesn't support HTTPS verification
+    ssl._create_default_https_context = _create_unverified_https_context
+
+
+
 logger = logging.getLogger(__name__)
 
 URL_LINKS = {
@@ -33,7 +47,7 @@ class LibrispeechDataset(BaseDataset):
         if data_dir is None:
             data_dir = ROOT_PATH / "data" / "datasets" / "librispeech"
             data_dir.mkdir(exist_ok=True, parents=True)
-        self._data_dir = data_dir
+        self._data_dir = Path(data_dir)
         if part == 'train_all':
             index = sum([self._get_or_load_index(part)
                          for part in URL_LINKS if 'train' in part], [])

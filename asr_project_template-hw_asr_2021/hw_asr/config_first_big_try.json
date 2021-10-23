@@ -10,12 +10,15 @@
     }
   },
   "augmentations": {
+    "random_apply": 0.2,
     "wave": [
       {"type":"Gain",
       "args": {}},
       {"type":"Volume",
       "args": {}},
       {"type":"Stretch",
+      "args": {}},
+      {"type": "Pitch",
       "args": {}},
        {"type":"NormalNoise",
       "args": {}}
@@ -28,9 +31,9 @@
   "arch": {
     "type": "SpeechRecognitionModel",
     "args": {
-      "n_cnn_layers": 2,
-        "n_rnn_layers": 3,
-        "rnn_dim": 128,
+        "n_cnn_layers": 3,
+        "n_rnn_layers": 5,
+        "rnn_dim": 512,
 
         "n_feats": 128,
         "stride": 2,
@@ -98,15 +101,15 @@
   "lr_scheduler": {
     "type": "OneCycleLR",
     "args": {
-      "steps_per_epoch": 100,
-      "epochs": 50,
+      "steps_per_epoch": 201,
+      "epochs": 100,
       "anneal_strategy": "linear",
       "max_lr": 5e-4
 
     }
   },
   "trainer": {
-    "epochs": 50,
+    "epochs": 100,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
@@ -114,7 +117,7 @@
     "early_stop": 100,
     "visualize": "wandb",
     "wandb_project": "asr_project",
-    "len_epoch": 100,
+    "len_epoch": 200,
     "grad_norm_clip": 10
   }
 }
