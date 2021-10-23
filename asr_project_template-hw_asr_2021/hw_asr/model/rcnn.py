@@ -98,11 +98,11 @@ class SpeechRecognitionModel(BaseModel):
 
     def forward(self, spectrogram, *args, **kwargs):
         x = spectrogram.unsqueeze(1).transpose(2, 3)
-        print(x.size())
+
         x = self.cnn(x)
         x = self.rescnn_layers(x)
         sizes = x.size()
-        print(sizes)
+
         x = x.view(sizes[0], sizes[1] * sizes[2], sizes[3])  # (batch, feature, time)
         x = x.transpose(1, 2)  # (batch, time, feature)
 
