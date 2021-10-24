@@ -12,10 +12,10 @@ class Stretch(AugmentationBase):
         self.max_ = max_
 
     def __call__(self, data: Tensor,  **kwargs):
-        rate = (self.min_ + (self.max_ - self.min_) * torch.rand(1)).item()
+        rate =  (self.min_ + (self.max_ - self.min_) * torch.rand(1)).item()
         return torch.from_numpy(
                         librosa.effects.time_stretch(
-                            data.cpu().numpy().squeeze(),
+                            data,
                             rate
                             )
                         )

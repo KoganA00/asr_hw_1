@@ -23,12 +23,14 @@ class CTCCharTextEncoder(CharTextEncoder):
         prev_letter = None
         prev_letter_was_empty_token = False
         for ind in inds:
+            print(prev_letter, self.ind2char[ind])
             if ind == 0:
                 prev_letter_was_empty_token = True
                 continue
             if len(line) == 0 or prev_letter != self.ind2char[ind] or prev_letter_was_empty_token:
                 line = line + self.ind2char[ind]
                 prev_letter = line[-1]
+                prev_letter_was_empty_token = False
         return line
 
 

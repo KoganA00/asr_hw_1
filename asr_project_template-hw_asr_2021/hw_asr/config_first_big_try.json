@@ -19,9 +19,9 @@
       {"type":"Stretch",
       "args": {}},
       {"type": "Pitch",
-      "args": {}},
-       {"type":"NormalNoise",
-      "args": {}}
+      "args": {"sr": 16000}},
+       {"type":"WhiteNoise",
+      "args": {"sr": 16000}}
     ],
     "spectrogram": [
       {"type":"FreqMasking",
