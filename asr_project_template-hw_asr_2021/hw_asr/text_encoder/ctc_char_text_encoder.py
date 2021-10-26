@@ -34,7 +34,6 @@ class CTCCharTextEncoder(CharTextEncoder):
                 prev_letter_was_empty_token = False
         return line
 
-
     def _ctc_decode_string(self, str):
         str_with_empty = []
         for char in str:
@@ -86,34 +85,37 @@ class CTCCharTextEncoder(CharTextEncoder):
 
         hypos = [(x, old_hypos_prob[x]) for x in old_hypos_prob.keys()]
         '''
-
+        #print(char_length)
         for i in range(char_length):
-
+            # print(i, end=' ')
             new_hypos_prob = {}
 
             for new_ind in range(voc_size):
                 new_char = self.ind2char[new_ind]
-                for hypo in old_hypos_prob.keys():
-                    #Если это первая итерация, то новый символ - это и есть новая гипотеза
+                # len_ = len(old_hypos_prob.keys())
+                for jj, hypo in enumerate(old_hypos_prob.keys()):
+                    # print(i, '/', char_length, new_ind, '/', voc_size, jj, '/', len_)
+                    # Если это первая итерация, то новый символ - это и есть новая гипотеза
                     if len(hypo) == 0:
                         new_hypo = new_char
-                    #Если новый символ равен предыдущему, то гипотеза не меняется
+                    # Если новый символ равен предыдущему, то гипотеза не меняется
                     elif new_char == hypo[-1]:
                         new_hypo = hypo
-                    #Если предыдущий символ не пустой, то новый символ (будь то пустой символ или другая буква)
-                    #просто добавляется
+                    # Если предыдущий символ не пустой, то новый символ (будь то пустой символ или другая буква)
+                    # просто добавляется
                     elif hypo[-1] != self.EMPTY_TOK:
                         new_hypo = hypo + new_char
-                    #Если последний символ пустой, а добавляется непустой, то пустой удаляется и добавляется новый
+                    # Если последний символ пустой, а добавляется непустой, то пустой удаляется и добавляется новый
                     elif hypo[-1] == self.EMPTY_TOK and new_char != self.EMPTY_TOK:
                         new_hypo = hypo[:-1] + new_char
                     else:
-                        raise ValueError('Strange Pokemon. I checked all possible cases. Hypo: \"' + hypo + '\" New char: \'' + new_char + '\'')
+                        raise ValueError(
+                            'Strange Pokemon. I checked all possible cases. Hypo: \"' + hypo + '\" New char: \'' + new_char + '\'')
                     new_hypos_prob[new_hypo] = new_hypos_prob.get(new_hypo, 0) + old_hypos_prob[hypo] * probs[i][
                         new_ind].item()
             best_hypos_beam = [k for k, v in sorted(new_hypos_prob.items(), key=lambda x: x[1])][-beam_size:]
             old_hypos_prob = {k: new_hypos_prob[k] for k in best_hypos_beam}
-            assert len(old_hypos_prob) == beam_size
+            # assert len(old_hypos_prob) == beam_size
             #
             # todo пробежаться и отсмотреть повторы
         final_hypos = {}

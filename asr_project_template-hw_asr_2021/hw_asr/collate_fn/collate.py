@@ -15,7 +15,9 @@ def collate_fn(dataset_items: List[dict]):
                     "text_encoded": [],
                     'spectrogram_length': torch.zeros(len(dataset_items), dtype=int),
                     "text_encoded_length": torch.zeros(len(dataset_items), dtype=int),
-                    "text": []}
+                    "text": [],
+                    "audio": [],
+                    "audio_length": []}
     # TODO: your code here
     max_len_spec = 0
     max_len_te_en = 0
@@ -40,5 +42,7 @@ def collate_fn(dataset_items: List[dict]):
         result_batch['text_encoded'][ii, :data['text_encoded'].shape[-1]] = data['text_encoded'][0]
         result_batch["text_encoded_length"][ii] = int(len(data["text_encoded"][0]))
         result_batch["text"].append(data["text"])
+        result_batch["audio"].append(data["audio"])
+        result_batch["audio_length"].append(data["audio_length"])
 
     return result_batch
