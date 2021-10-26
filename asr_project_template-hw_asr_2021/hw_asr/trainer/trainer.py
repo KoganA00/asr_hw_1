@@ -50,7 +50,7 @@ class Trainer(BaseTrainer):
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = 10
-
+        self.sr = config["preprocessing"]["sr"]
         self.train_metrics = MetricTracker(
             "loss", "grad norm", *[m.name for m in self.metrics], writer=self.writer
         )
@@ -235,8 +235,9 @@ class Trainer(BaseTrainer):
         )
 
     def _log_audio(self, audio, audio_length):
-        ind = torch.randint(audio.shape[0], size=(1,)).item()
-        self.writer.add_audio("audio", audio[ind, :audio_length[ind]], self.sample_rate)
+        ind = torch.randint(len(audio), size=(1,)).item()
+        print(ind, audio_length[ind])
+        self.writer.add_audio("audio", audio[ind][:audio_length[ind]], self.sr)
 
     def _log_spectrogram(self, spectrogram_batch):
         spectrogram = random.choice(spectrogram_batch)
