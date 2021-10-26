@@ -5,7 +5,7 @@ from hw_asr.augmentations.base import AugmentationBase
 
 
 class WhiteNoise(AugmentationBase):
-    def __init__(self, sr, min_f_decay=0, *args, **kwargs):
+    def __init__(self, sr=16000, min_f_decay=0, *args, **kwargs):
         self._aug = torch_audiomentations.AddColoredNoise(min_f_decay=min_f_decay, sample_rate=sr, *args, **kwargs)
 
     def __call__(self, data: Tensor):
