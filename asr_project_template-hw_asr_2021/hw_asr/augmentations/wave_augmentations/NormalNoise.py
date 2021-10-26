@@ -6,7 +6,7 @@ from hw_asr.augmentations.base import AugmentationBase
 
 
 class NormalNoise(AugmentationBase):
-    def __init__(self, min_f_decay=0,  *args, **kwargs):
+    def __init__(self, mean_=0.0, std_=0.05,  *args, **kwargs):
         self.noiser = AddColoredNoise(mean_, std_)
 
     def __call__(self, data: Tensor):
