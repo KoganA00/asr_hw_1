@@ -5,7 +5,7 @@ from torch import Tensor
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
 import os
 
-import youtokentome
+#import youtokentome
 
 class CTCBPETextEncoder(CharTextEncoder):
     EMPTY_TOK = "^"

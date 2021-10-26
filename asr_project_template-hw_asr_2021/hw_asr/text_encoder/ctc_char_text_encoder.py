@@ -23,7 +23,8 @@ class CTCCharTextEncoder(CharTextEncoder):
         prev_letter = None
         prev_letter_was_empty_token = False
         for ind in inds:
-            print(prev_letter, self.ind2char[ind])
+            if torch.is_tensor(ind):
+                ind = ind.item()
             if ind == 0:
                 prev_letter_was_empty_token = True
                 continue
@@ -89,20 +90,38 @@ class CTCCharTextEncoder(CharTextEncoder):
         for i in range(char_length):
 
             new_hypos_prob = {}
-            most_probable_inds = torch.argsort(probs[i], descending=True)[:beam_size]
-            for new_ind in most_probable_inds:
-                new_char = self.ind2char[new_ind.item()]
+
+            for new_ind in range(voc_size):
+                new_char = self.ind2char[new_ind]
                 for hypo in old_hypos_prob.keys():
-                    new_hypo = hypo + new_char
+                    #Если это первая итерация, то новый символ - это и есть новая гипотеза
+                    if len(hypo) == 0:
+                        new_hypo = new_char
+                    #Если новый символ равен предыдущему, то гипотеза не меняется
+                    elif new_char == hypo[-1]:
+                        new_hypo = hypo
+                    #Если предыдущий символ не пустой, то новый символ (будь то пустой символ или другая буква)
+                    #просто добавляется
+                    elif hypo[-1] != self.EMPTY_TOK:
+                        new_hypo = hypo + new_char
+                    #Если последний символ пустой, а добавляется непустой, то пустой удаляется и добавляется новый
+                    elif hypo[-1] == self.EMPTY_TOK and new_char != self.EMPTY_TOK:
+                        new_hypo = hypo[:-1] + new_char
+                    else:
+                        raise ValueError('Strange Pokemon. I checked all possible cases. Hypo: \"' + hypo + '\" New char: \'' + new_char + '\'')
                     new_hypos_prob[new_hypo] = new_hypos_prob.get(new_hypo, 0) + old_hypos_prob[hypo] * probs[i][
                         new_ind].item()
-            old_hypos_prob = new_hypos_prob.copy()
+            best_hypos_beam = [k for k, v in sorted(new_hypos_prob.items(), key=lambda x: x[1])][-beam_size:]
+            old_hypos_prob = {k: new_hypos_prob[k] for k in best_hypos_beam}
+            assert len(old_hypos_prob) == beam_size
             #
             # todo пробежаться и отсмотреть повторы
-            final_hypos = {}
-            for hypo in old_hypos_prob.keys():
-                hypo_decoded = self._ctc_decode_string(hypo)
-                final_hypos[hypo_decoded] = final_hypos.get(hypo_decoded, 0) + old_hypos_prob[hypo]
+        final_hypos = {}
+        for hypo in old_hypos_prob.keys():
+            if len(hypo) > 0 and hypo[-1] == self.EMPTY_TOK:
+                final_hypos[hypo[:-1]] = final_hypos.get(hypo, 0) + old_hypos_prob[hypo]
+            else:
+                final_hypos[hypo] = final_hypos.get(hypo, 0) + old_hypos_prob[hypo]
 
         hypos = [(x, final_hypos[x]) for x in final_hypos.keys()]
 

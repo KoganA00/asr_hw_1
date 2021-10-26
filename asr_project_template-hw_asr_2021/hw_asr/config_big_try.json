@@ -1,7 +1,7 @@
 {
   "name": "default_config",
   "n_gpu": 1,
-  "resume": "saved/models/default_config/1023_222740/model_best.pth",
+
   "preprocessing": {
     "sr": 16000,
     "spectrogram": {
@@ -20,9 +20,9 @@
       {"type":"Stretch",
       "args": {}},
       {"type": "Pitch",
-      "args": {}},
-       {"type":"NormalNoise",
-      "args": {}}
+      "args": {"sr": 16000}},
+       {"type":"WhiteNoise",
+      "args": {"sr": 16000}}
     ],
     "spectrogram": [
       {"type":"FreqMasking",
@@ -50,7 +50,7 @@
         {
           "type": "LibrispeechDataset",
           "args": {
-            "part": "train-clean-100",
+            "part": "train-clean-360",
             "max_audio_length": 20.0,
             "max_text_length": 200,
             "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
@@ -75,7 +75,7 @@
       ]
     },
     "test": {
-      "batch_size": 10,
+      "batch_size": 20,
       "num_workers": 5,
       "n_jobs": 1,
       "datasets": [
@@ -83,9 +83,8 @@
           "type": "LibrispeechDataset",
           "args": {
             "part": "test-clean",
-            "max_audio_length": 10.0,
-            "max_text_length": 50,
-            "limit": 10,
+            "max_audio_length": 20.0,
+            "max_text_length": 200,
             "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
           }
         }

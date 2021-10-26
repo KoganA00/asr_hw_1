@@ -9,4 +9,4 @@ class Volume(AugmentationBase):
 
     def __call__(self, data):
         gain = (self.min_ + (self.max_ - self.min_) * torch.rand(1)).item()
-        return Vol(gain=gain)(data)
+        return Vol(gain=gain)(data.unsqueeze(1)).squeeze(1)
