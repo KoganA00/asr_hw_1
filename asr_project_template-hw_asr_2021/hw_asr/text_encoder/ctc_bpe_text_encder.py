@@ -7,25 +7,27 @@ import os
 
 import youtokentome
 
+
 class CTCBPETextEncoder(CharTextEncoder):
-    EMPTY_TOK = "^"
-    def __init__(self, alphabet: List[str], **kwargs):
-        model_path = './bpe/bpe_train_libreespeech.model'
+
+    def __init__(self):
+        self.EMPTY_TOK = '_'
+        model_path = 'asr_hw_1/asr_project_template-hw_asr_2021/hw_asr/bpe/bpe_train_libreespeech.model'
         self.bpe_tokenizer = youtokentome.BPE(model_path)
 
         alphabet = self.bpe_tokenizer.vocab()
-        alphabet[0] = self.EMPTY_TOK
+
         super().__init__(alphabet)
 
-
-    def ctc_decode(self, inds: List[int]) -> str:
+    def ctc_decode(self, inds):
         # TODO: your code here
-        if torch.is_tensor(inds):
-            inds = inds.tolist()
+
         line = []
         prev_letter = None
         prev_letter_was_empty_token = False
         for ind in inds:
+            if torch.is_tensor(ind):
+                ind = ind.item()
             if ind == 0:
                 prev_letter_was_empty_token = True
                 continue
@@ -33,12 +35,13 @@ class CTCBPETextEncoder(CharTextEncoder):
                 line.append(ind)
                 prev_letter = line[-1]
                 prev_letter_was_empty_token = False
+
         return self.bpe_tokenizer.decode([line])[0]
 
-    def encode(self, text) -> Tensor:
+    def encode(self, text):
         text = self.normalize_text(text)
         try:
-            return Tensor(self.bpe_tokenizer.encode([text], output_type=youtokentome.OutputType.ID)).squeeze(0).squeeze(0)
+            return Tensor(self.bpe_tokenizer.encode([text], output_type=youtokentome.OutputType.ID))
         except KeyError as e:
             raise Exception(
                 f"Can't encode text '{text}'")
