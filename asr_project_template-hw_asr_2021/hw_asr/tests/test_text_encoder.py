@@ -9,6 +9,7 @@ class TestTextEncoder(unittest.TestCase):
         text = " ^^^^^^^^^^^^^^^i^t^ ^m^i^^^^de hha^vebbe^en ^^o^rr^t^edd forr the gree^^^n^ b^o^^^^^^^^^^x^^^^^^^^^^^^"
         true_text = " it mide havebeen orted for the gren box"
         inds = [text_encoder.char2ind[c] for c in text]
+        #print(text_encoder.encode(text).size())
         decoded_text = text_encoder.ctc_decode(inds)
         self.assertIn(decoded_text, true_text)
 
@@ -19,10 +20,10 @@ class TestTextEncoder(unittest.TestCase):
         import torch
         import numpy as np
         encoder = CTCCharTextEncoder(alphabet=['a', 'b'])
-        probes = torch.tensor([[0.8, 0.2, 0.0], [0.6, 0.4, 0.0]])
+        probes = torch.tensor([[0.8, 0.2, 0.0], [0.0, 0.4, 0.6]])
         hypos = encoder.ctc_beam_search(probes, 0, 2)
         # print(hypos)
-        real_hypos = sorted([('a', 0.52), ('', 0.48)], key=lambda x: x[1], reverse=True)
+        real_hypos = sorted([('a', 0.4), ('b', 0.48)], key=lambda x: x[1], reverse=True)
         assert len(real_hypos) == len(hypos), 'different lengths'
 
         for i in range(len(hypos)):
