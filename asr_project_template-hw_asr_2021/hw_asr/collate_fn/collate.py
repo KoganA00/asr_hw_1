@@ -43,6 +43,6 @@ def collate_fn(dataset_items: List[dict]):
         result_batch["text_encoded_length"][ii] = int(len(data["text_encoded"][0]))
         result_batch["text"].append(data["text"])
         result_batch["audio"].append(data["audio"])
-        result_batch["audio_length"].append(data["audio_length"])
+        result_batch["audio_length"].append(data["audio"].size()[-1])
 
     return result_batch
