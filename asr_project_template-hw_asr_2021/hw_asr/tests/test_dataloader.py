@@ -2,7 +2,7 @@ import unittest
 
 from hw_asr.collate_fn.collate import collate_fn
 from hw_asr.datasets import LibrispeechDataset
-from hw_asr.text_encoder.ctc_char_text_encoder import CTCCharTextEncoder
+from hw_asr.text_encoder.ctc_bpe_text_encder import CTCBPETextEncoder
 from hw_asr.utils.parse_config import ConfigParser
 
 
@@ -21,7 +21,7 @@ else:
 
 class TestDataloader(unittest.TestCase):
     def test_collate_fn(self):
-        text_encoder = CTCCharTextEncoder.get_simple_alphabet()
+        text_encoder = CTCBPETextEncoder()
         config_parser = ConfigParser.get_default_configs()
 
         ds = LibrispeechDataset(
@@ -30,6 +30,8 @@ class TestDataloader(unittest.TestCase):
 
         BS = 3
         batch = collate_fn([ds[i] for i in range(BS)])
+        print(ds[0]['audio'].size())
+        print(batch['audio_length'][0])
 
         self.assertIn("spectrogram", batch)  # torch.tensor
         bs, audio_time_length, feature_length = batch["spectrogram"].shape
