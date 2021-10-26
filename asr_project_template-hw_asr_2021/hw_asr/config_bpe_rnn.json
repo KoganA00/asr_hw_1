@@ -1,5 +1,5 @@
 {
-  "name": "new_config",
+  "name": "bpe_config",
   "n_gpu": 1,
 
   "preprocessing": {
@@ -17,9 +17,11 @@
       "args": {}},
       {"type":"Volume",
       "args": {}},
-       {"type":"WhiteNoise",
+      {"type":"Stretch",
+      "args": {}},
+      {"type": "Pitch",
       "args": {"sr": 16000}},
-        {"type":"Pitch",
+       {"type":"WhiteNoise",
       "args": {"sr": 16000}}
     ],
     "spectrogram": [
@@ -28,15 +30,11 @@
     ]
   },
   "arch": {
-    "type": "SpeechRecognitionModel",
+    "type": "RNNModel",
     "args": {
-        "n_cnn_layers": 3,
-        "n_rnn_layers": 5,
-        "rnn_dim": 512,
 
-        "n_feats": 128,
-        "stride": 2,
-        "dropout": 0.1
+        "n_feats": 128
+
 
     }
   },
@@ -81,6 +79,8 @@
           "type": "LibrispeechDataset",
           "args": {
             "part": "test-clean",
+            "max_audio_length": 20.0,
+            "max_text_length": 200,
             "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
           }
         }
@@ -115,14 +115,14 @@
     "type": "OneCycleLR",
     "args": {
       "steps_per_epoch": 201,
-      "epochs": 150,
+      "epochs": 100,
       "anneal_strategy": "linear",
       "max_lr": 5e-4
 
     }
   },
   "trainer": {
-    "epochs": 150,
+    "epochs": 100,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
