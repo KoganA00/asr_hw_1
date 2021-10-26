@@ -1,7 +1,7 @@
 import unittest
 
 from hw_asr.text_encoder.ctc_char_text_encoder import CTCCharTextEncoder
-from hw_asr.text_encoder.ctc_bpe_text_encder import CTCBPETextEncoder
+#from hw_asr.text_encoder.ctc_bpe_text_encder import CTCBPETextEncoder
 
 class TestTextEncoder(unittest.TestCase):
     def test_ctc_decode(self):
@@ -12,14 +12,7 @@ class TestTextEncoder(unittest.TestCase):
         decoded_text = text_encoder.ctc_decode(inds)
         self.assertIn(decoded_text, true_text)
 
-    '''def test_bpe_decode(self):
-        bpe = CTCBPETextEncoder()
-        text =  ' soon soon^^^^^ia'
-        true_text = " soonia"
-        encoded_text = bpe.encode(text)
-        decoded_text = bpe.ctc_decode(encoded_text)
-        print(decoded_text, true_text)
-        self.assertIn(decoded_text, true_text)'''
+
 
     def test_beam_search(self):
         # TODO: (optional) write tests for beam search
