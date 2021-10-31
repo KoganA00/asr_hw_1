@@ -5,8 +5,12 @@
 < Write your installation guide here >
 
 ```shell
-pip install -r ./requirements.txt
-```
+git clone https://github.com/KoganA00/asr_hw_1
+pip install -r requirements.txt
+gdown --id 1NY0hfmsjJ_8Bpw8YnUmPF7-GHHwzWMFP
+gdown --id 1g4jGffvtOzKcUxYCVLZyqDnXl6Phb5F-
+
+python3 test.py --config config_big_try.json --resume model_best.pth --output testout.json```
 
 ## Recommended implementation order
 
