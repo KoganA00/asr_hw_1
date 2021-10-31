@@ -5,6 +5,7 @@ tqdm
 tensorboard
 matplotlib
 
+youtokentome
 wandb
 librosa
 editdistance
